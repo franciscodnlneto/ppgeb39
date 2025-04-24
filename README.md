@@ -132,7 +132,7 @@ A **Transformada de Fourier** é uma técnica matemática que decompõe um sinal
   mean_freq <- sum(freq * magnitude) / sum(magnitude)
   ```
 - **Interpretação (Hipótese em ELA):** Frequências médias mais baixas indicam predominância de fibras musculares lentas ou perda de fibras rápidas, comum em ELA avançada.
-- **Valor Exemplo:** `292.86 Hz` (alto, sugere atividade muscular vigorosa ou anormal).
+- **Valor Exemplo:** `292.86 Hz` (SUPOSTAMENTE alto, sugere atividade muscular vigorosa ou anormal).
 
 #### 2. **Frequência Mediana** (Gráfico vermelho)
 
@@ -144,7 +144,7 @@ A **Transformada de Fourier** é uma técnica matemática que decompõe um sinal
   median_freq <- freq[median_freq_idx]
   ```
 - **Interpretação (Hipótese em ELA):** Valores reduzidos refletem recrutamento motor limitado e diversidade reduzida das fibras musculares ativas.
-- **Valor Exemplo:** `122.80 Hz` (dentro da faixa normal).
+- **Valor Exemplo:** `122.80 Hz` (SUPOSTAMENTE dentro da faixa normal, carece de comparação com controle).
 
 #### 3. **Potência Total do Sinal** (Gráfico vermelho)
 
@@ -154,7 +154,7 @@ A **Transformada de Fourier** é uma técnica matemática que decompõe um sinal
   total_power <- sum(magnitude^2)
   ```
 - **Interpretação (Hipótese em ELA):** Potência reduzida indica menor ativação muscular, consistente com a perda de unidades motoras na ELA.
-- **Valor Exemplo:** `0.03764 mV²` (atividade muscular moderada-baixa).
+- **Valor Exemplo:** `0.03764 mV²` (atividade muscular SUPOSTAMENTE moderada-baixa, carece de comparação com controle).
 
 #### 4. **Número de Picos Significativos** (Gráfico vermelho)
 
@@ -165,7 +165,7 @@ A **Transformada de Fourier** é uma técnica matemática que decompõe um sinal
   significant_peaks <- peaks[magnitude[peaks] > 0.005]
   ```
 - **Interpretação (Hipótese em ELA):** Pacientes com ELA geralmente têm menos picos ou picos dispersos devido à dessincronização motora.
-- **Valor Exemplo:** `10 picos` (normal).
+- **Valor Exemplo:** `10 picos` (SUPOSTAMENTE normal, carece de comparação com controle).
 
 ---
 
