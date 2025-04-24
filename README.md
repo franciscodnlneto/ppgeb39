@@ -47,6 +47,28 @@ Este repositório inclui:
 O código é totalmente aberto e livre para ser utilizado, modificado e aprimorado.
 
 ---
+
+## ⚙️ Funcionalidades
+
+### Simulação de EMG
+- Configuração detalhada de cada padrão (amplitude, duração, intervalo)
+- Variabilidade natural através de desvios padrão configuráveis
+- Visualização em tempo real com marcadores
+- Exportação de dados simulados em CSV
+
+### Análise de Fourier
+- Importação de dados EMG (simulados ou reais)
+- Pré-processamento com janelamento (Hanning, Hamming, Blackman)
+- Cálculo de métricas espectrais:
+  - Frequência média ponderada
+  - Frequência mediana
+  - Potência total
+  - Detecção de picos significativos
+  
+
+---
+
+
 ## 🔍 Análise de Frequência com FFT (Transformada de Fourier)
 
 A Transformada Rápida de Fourier (FFT - *Fast Fourier Transform*) permite converter o sinal EMG do domínio do tempo (gráfico azul) para o domínio da frequência (gráfico vermelho), facilitando a identificação de padrões rítmicos, frequências dominantes e alterações características de doenças neuromusculares, como a Esclerose Lateral Amiotrófica (ELA).
@@ -121,6 +143,69 @@ A **Transformada de Fourier** é uma técnica matemática que decompõe um sinal
 - **Magnitude** é a intensidade ou contribuição de cada frequência específica ao sinal, observada no gráfico vermelho após a FFT.
 
 ---
+
+Claro! Aqui está a **seção pronta para colar no seu README**, exatamente como você pediu:
+
+---
+
+## 🧮 Como foi calculado o FFT no Simulador
+
+Na aplicação Shiny, **a Transformada Rápida de Fourier (FFT)** foi implementada usando a função `fft()` da **base do R** (`package:stats`), sem necessidade de bibliotecas externas adicionais.
+
+### 📦 Biblioteca utilizada:
+- **`fft()`** do próprio R base (não precisa instalar nada adicional)
+
+---
+
+### ⚙️ Etapas do Cálculo da FFT no Código:
+
+A função principal usada é `calculate_fft()` e segue este fluxo:
+
+1. **Remoção do Componente DC (offset)**:
+   Elimina o valor médio do sinal para evitar distorções no espectro:
+   ```r
+   signal <- signal - mean(signal)
+   ```
+
+2. **Aplicação de Janelamento** (windowing):
+   Aplica uma função de janela (ex: Hanning, Hamming, Blackman) para suavizar bordas:
+   ```r
+   windowed_signal <- apply_window(signal, window_type)
+   ```
+
+3. **Cálculo da FFT**:
+   A Transformada de Fourier propriamente dita:
+   ```r
+   fft_result <- fft(windowed_signal)
+   ```
+
+4. **Cálculo da Magnitude do Espectro**:
+   Considerando apenas a metade positiva do espectro (sinal real):
+   ```r
+   magnitude <- abs(fft_result[1:(n/2+1)]) / n * 2
+   magnitude[1] <- magnitude[1] / 2  # Corrige a magnitude DC
+   ```
+
+5. **Geração do Vetor de Frequências**:
+   Relaciona cada ponto do espectro à sua frequência correspondente:
+   ```r
+   freq <- seq(0, sampling_rate/2, length.out = length(magnitude))
+   ```
+
+---
+
+### 📈 Saída da Função `calculate_fft()`
+
+A função retorna uma **lista com os seguintes elementos**:
+- `freq`: vetor com as frequências em Hertz (Hz)
+- `magnitude`: vetor da magnitude espectral associada a cada frequência
+
+Esses vetores são usados para:
+- Gerar o **gráfico vermelho** do espectro de frequência
+- Calcular métricas como **frequência média ponderada**, **frequência mediana**, **potência total** e **número de picos significativos**
+
+--- 
+
 
 ### 📌 Resultados e Interpretações Específicas:
 
@@ -209,6 +294,29 @@ Estamos totalmente disponíveis e interessados em ajudar quem desejar continuar 
 ## ⚖️ Licença e Autoria
 
 Este projeto é uma criação colaborativa do Grupo 2 (Fernando, Francisco, João e Ysabel). Todos os integrantes possuem coautoria e compartilham propriedade intelectual sobre o código desenvolvido.
+
+---
+## ⚠️ Limitações
+
+- Os dados são 100% simulados e não substituem dados reais de EMG
+- As interpretações clínicas são hipotéticas e educacionais
+- O simulador não realiza diagnósticos
+- Não validado clinicamente para uso diagnóstico real
+- Interface totalmente em português (sem suporte multilíngue)
+---
+
+
+## 💻 Requisitos de Sistema
+
+- R (versão 4.0.0 ou superior)
+- RStudio (opcional, mas recomendado)
+- Conexão com internet para instalar pacotes
+
+## 🚀 Como Executar Localmente
+
+1. Clone o repositório:
+```bash
+git clone https://github.com/franciscodnlneto/ppgeb39.git
 
 ---
 
