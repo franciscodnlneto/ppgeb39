@@ -1370,6 +1370,7 @@ ui <- dashboardPage(
                                           value = 2000, min = 100, max = 10000),
                              checkboxInput("remove_dc", "Remover Componente DC", value = TRUE)
                       ),
+                     
                       column(4,
                              selectInput("window_function", "Função de Janelamento:",
                                          choices = c("Retangular" = "rectangular",
@@ -1383,6 +1384,60 @@ ui <- dashboardPage(
                                           value = 500, min = 10, max = 2500)
                       )
                     ),
+                    # Bloco de explicações técnicas interativas
+                    div(
+                      style = "margin-top: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9;",
+                      
+                      tags$details(
+                        tags$summary(HTML("🎚️ <b>Frequência de Amostragem (Hz)</b> – <i>O que é isso?</i>")),
+                        tags$p("É o número de vezes por segundo que o sinal é medido. Por exemplo, 2000 Hz significa que 2000 amostras são captadas a cada segundo."),
+                        tags$p("🧠 Segundo o Teorema de Nyquist, para representar corretamente um sinal sem distorção, a frequência de amostragem deve ser pelo menos o dobro da maior frequência presente no sinal."),
+                        tags$p("🔍 Se você quer analisar até 500 Hz, precisa amostrar com pelo menos 1000 Hz. Caso contrário, ocorre o *aliasing*, onde frequências altas 'parecem' frequências mais baixas, gerando distorções."),
+                        tags$p("📌 Exemplo: se um sinal tem componente a 600 Hz e você amostra a 1000 Hz (violando Nyquist), ele parecerá estar em 400 Hz (600 - 1000 = -400 → alias para +400)."),
+                        tags$p("🔗 Saiba mais em: ", tags$a(href = "https://www.brickschool.com.br/post/teorema-de-nyquist", target = "_blank", "Teorema de Nyquist – BrickSchool"))
+                      ),
+                      
+                      tags$details(
+                        tags$summary(HTML("🚫 <b>Remover Componente DC</b> – <i>Por que fazer isso?</i>")),
+                        tags$p("O componente DC é a média do sinal. Em sinais reais, muitas vezes ele é diferente de zero devido a ruídos de base."),
+                        tags$p("Remover o componente DC centraliza o sinal em torno de zero, evitando que o gráfico de frequência mostre um pico falso em 0 Hz."),
+                        tags$p("✅ Recomendado: manter essa opção ativada para focar nas oscilações reais do sinal EMG.")
+                      ),
+                      
+                      tags$details(
+                        tags$summary(HTML("📐 <b>Função de Janelamento</b> – <i>Para que serve?</i>")),
+                        tags$p("Quando aplicamos a FFT em um sinal finito, estamos implicitamente cortando o início e o fim. Isso cria 'bordas duras' e pode gerar distorções conhecidas como *vazamento espectral* (spectral leakage)."),
+                        tags$p("📉 Imagine que o sinal fosse um som contínuo, mas você parasse a gravação de forma brusca. O corte pode criar artefatos que não existiam no som real."),
+                        tags$p("Para corrigir isso, usamos *janelas*: funções matemáticas que suavizam o início e o fim do sinal, como se estivéssemos diminuindo o volume gradualmente."),
+                        tags$p("🪟 Exemplo: a janela de Hanning começa em zero, sobe suavemente até o meio e desce de novo até zero."),
+                        tags$p("🔍 Se você NÃO usar janelas (janela 'Retangular'), seu espectro pode mostrar frequências falsas ou artefatos."),
+                        tags$p("✅ Recomendação: use a janela de *Hanning* para sinais EMG, pois ela reduz bem os efeitos de borda sem distorcer muito a forma das frequências."),
+                        tags$table(
+                          style = "width:100%; font-size: 14px;",
+                          tags$thead(
+                            tags$tr(
+                              tags$th("🪟 Tipo de Janela"),
+                              tags$th("Características"),
+                              tags$th("Quando Usar")
+                            )
+                          ),
+                          tags$tbody(
+                            tags$tr(tags$td("Retangular"), tags$td("Sem suavização, cortes abruptos"), tags$td("Somente para testes teóricos")),
+                            tags$tr(tags$td("Hanning"), tags$td("Transição suave nas bordas, boa redução de vazamento"), tags$td("✅ Ideal para sinais EMG")),
+                            tags$tr(tags$td("Hamming"), tags$td("Semelhante à Hanning, um pouco mais 'firme' nas bordas"), tags$td("Boa para sinais ruidosos")),
+                            tags$tr(tags$td("Blackman"), tags$td("Atenuação máxima nas bordas, janela mais 'lenta'"), tags$td("Para sinais com muitos picos ou pouca repetição"))
+                          )
+                        )
+                      ),
+                      
+                      tags$details(
+                        tags$summary(HTML("📊 <b>Frequência Máxima para Exibição (Hz)</b> – <i>Como ajustar?</i>")),
+                        tags$p("Este valor define o limite direito do gráfico de espectro. Serve para focar em faixas específicas."),
+                        tags$p("💡 Exemplo: a maior parte da atividade relevante do EMG está entre 20 e 300 Hz. Se você quer ignorar ruído acima disso, defina o valor máximo como 400 ou 500 Hz."),
+                        tags$p("🔧 Isso não afeta os cálculos da FFT – apenas a forma como o gráfico é exibido.")
+                      )
+                    )
+                    ,
                     actionButton("analyze_fft_btn", "Analisar com FFT (Fast Fourier Transform", icon = icon("chart-line"),
                                  class = "btn-primary")
                 )
@@ -1405,42 +1460,51 @@ ui <- dashboardPage(
       ),
       
       # ABA: GERADOR DE SENOIDES ----------------------------------
+      # ---------------- ABA: GERADOR DE SENOIDES ----------------
       tabItem(tabName = "sine_generator",
               fluidRow(
                 column(4,
                        box(title = "Configuração de Componentes", width = 12,
                            status = "primary", solidHeader = TRUE,
+                           
                            selectInput("component_type", "Tipo de Componente:",
                                        choices = c("Constante" = "const", "Senoide" = "sine"), selected = "const"),
+                           
                            conditionalPanel(
                              condition = "input.component_type == 'const'",
                              sliderInput("const_value", "Valor da Constante:",
                                          min = -5, max = 5, value = 1, step = 0.1)
                            ),
+                           
                            conditionalPanel(
                              condition = "input.component_type == 'sine'",
                              selectInput("num_sine_components", "Número de Senoides (1 a 100):",
                                          choices = 1:100, selected = 1),
                              uiOutput("sine_config_ui")
                            ),
+                           
                            hr(),
                            
                            sliderInput("sine_total_time", "Duração Total (s):", min = 1, max = 10, value = 2, step = 1),
                            sliderInput("sine_sampling_rate", "Frequência de Amostragem (Hz):", min = 500, max = 5000, value = 2000, step = 500),
                            
+                          
                        )
                 ),
+                
                 column(8,
                        box(title = "Visualização do Sinal Gerado", width = 12, status = "info", solidHeader = TRUE,
                            plotlyOutput("sine_plot") %>% withSpinner())
                 )
               ),
+              
               fluidRow(
                 column(12,
                        downloadButton("download_sine_btn", "Download CSV", class = "btn-success")
                 )
               )
       )
+      
     )
   )
 )
