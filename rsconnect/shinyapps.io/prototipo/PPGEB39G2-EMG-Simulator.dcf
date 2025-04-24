@@ -5,6 +5,6 @@ account: prototipo
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 14597971
-bundleId:
+bundleId: 10167837
 url: https://prototipo.shinyapps.io/PPGEB39G2-EMG-Simulator/
 version: 1
