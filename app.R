@@ -11,14 +11,14 @@ library(rsconnect)
 
 
 # CREDENCIAIS
-rsconnect::setAccountInfo(
-  name = 'prototipo', 
-  token = '5BBF47812BEF1588858ED1918C68D737', 
-  secret = 'qnO6q2j3PBrnJ2uy7BOEZbrM2CD0acCOsO7eqfrm'
-)
+#rsconnect::setAccountInfo(
+#  name = 'prototipo', 
+#  token = '5BBF47812BEF1588858ED1918C68D737', 
+#  secret = 'qnO6q2j3PBrnJ2uy7BOEZbrM2CD0acCOsO7eqfrm'
+#)
 
 # Navegue até o diretório do seu app
-setwd("C:/Users/francisco.negrao/Desktop/PPGEB39G2")
+#setwd("C:/Users/francisco.negrao/Desktop/PPGEB39G2")
 
 #rsconnect::deployApp(
 #  appName = "PPGEB39G2-EMG-Simulator",
@@ -905,13 +905,13 @@ ui <- dashboardPage(
         "📚 <b>Disciplina PGEB39</b><br/>
       🗓️ <b>1º Sem/2025</b><br/>
       🧑‍🏫 Prof. Drº João Batista Destro Filho<br/><br/>
-      💼 <u>Seminário 25/04/2025</u><br/>
+      💼 <u>Seminário 24/04/2025</u><br/>
       🚀 Aplicação desenvolvida por alunos do PPGEB‑UFU<br/><br/>
       👥 <b>Grupo 2</b>: Fernando&nbsp;|&nbsp;Francisco&nbsp;|&nbsp;João&nbsp;|&nbsp;Ysabel<br/><br/>
       🎯 <b>Objetivo:</b> Capacitar profissionais da saúde a identificar e reconhecer padrões de EMG característicos da Esclerose Lateral Amiotrófica.<br/><br/>
       🐙 <b>Veja o código no GitHub:</b><br/>
       <a href='https://github.com/franciscodnlneto/ppgeb39' target='_blank' style='color:#1e90ff; text-decoration:none;'>
-      🔗 Você é livre para baixar, modificar e aprimorar!
+      🔗 CLIQUE AQUI! Você é livre para baixar, modificar e aprimorar!
       </a>"
       )
     )
