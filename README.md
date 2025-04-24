@@ -48,6 +48,125 @@ O código é totalmente aberto e livre para ser utilizado, modificado e aprimora
 
 ---
 
+## 🔍 Análise de Frequência com FFT (Transformada de Fourier)
+
+A Transformada Rápida de Fourier (FFT - *Fast Fourier Transform*) permite converter o sinal EMG do domínio do tempo (gráfico azul) para o domínio da frequência (gráfico vermelho), facilitando a identificação de padrões rítmicos, frequências dominantes e alterações características de doenças neuromusculares, como a Esclerose Lateral Amiotrófica (ELA).
+
+### 🧠 O que é a FFT?
+A FFT é um algoritmo que decompõe um sinal em suas **componentes senoidais básicas**, mostrando **quais frequências estão presentes** e com qual intensidade. Isso permite examinar padrões que não são visíveis diretamente no tempo.
+
+🔗 Saiba mais: [Fast Fourier Transform (NTi Audio)](https://www.nti-audio.com/en/support/know-how/fast-fourier-transform-fft)
+
+---
+
+### ⚙️ Pré-processamento aplicado no simulador
+
+Antes de aplicar a FFT ao sinal EMG, nosso sistema realiza duas etapas fundamentais para garantir maior precisão:
+
+1. **Remoção do componente DC (offset):**
+   - Subtrai-se a média do sinal, eliminando deslocamentos verticais que distorcem o espectro.
+   - Implementado via: `signal <- signal - mean(signal)`
+
+2. **Aplicação de janelamento (windowing):**
+   - Utilizamos funções de janela (ex: Hanning, Hamming, Blackman) para suavizar as bordas do sinal.
+   - Isso reduz artefatos espectrais (leakage) e melhora a resolução das frequências.
+
+🔬 Referência prática: [BIOPAC – EMG Frequency Signal Analysis](https://www.biopac.com/application-note/emg-electromyogram-frequency-signal-analysis/emg-frequency-signal-analysis/)
+
+---
+
+### 📊 Como interpretar os gráficos
+
+- **Gráfico Azul (Sinal Original):** Mostra o EMG no tempo, com amplitudes em milivolts (mV).
+- **Gráfico Vermelho (FFT):** Exibe o espectro de frequência do sinal (em Hz), onde:
+  - **Picos agudos** indicam frequências dominantes.
+  - **Frequências mais baixas** podem refletir recrutamento de unidades motoras lentas (comum em ELA).
+  - **Espectros achatados ou com menos picos** podem indicar **sincronização anormal** de unidades motoras.
+
+---
+
+### 📐 Métricas calculadas automaticamente
+
+| Métrica                       | Interpretação na ELA (Hipótese)                                                                 |
+|------------------------------|--------------------------------------------------------------------------------------------------|
+| **Frequência Média Ponderada** | Pode ser reduzida na ELA, refletindo menor atividade de fibras rápidas.                         |
+| **Frequência Mediana**         | Divide o espectro ao meio. Valores mais baixos sugerem menor complexidade de recrutamento.     |
+| **Potência Total do Sinal**   | Reduzida na ELA, indicando perda de unidades motoras e menor ativação muscular.                 |
+| **Picos Significativos**      | Menor número de picos pode refletir recrutamento reduzido ou dessincronizado.                   |
+
+📘 Leitura complementar:  
+- [Median and Mean Frequency in EMG – BIOPAC](https://www.biopac.com/application/emg-electromyography/advanced-feature/median-and-mean-frequency-analysis/)
+
+---
+
+### ℹ️ Notas Técnicas
+
+- **Simetria do espectro:** Como o sinal EMG é real, sua FFT é simétrica. Só mostramos a metade positiva.
+- **Resolução espectral (Δf):** Quanto mais longo o sinal no tempo, melhor a separação entre frequências.  
+  Fórmula: `Δf = Fs / N`, onde `Fs` é a frequência de amostragem e `N` o número de amostras.
+- **Magnitude:** A análise usa `abs(FFT)` (amplitude), mas também é comum usar `abs(FFT)^2` (potência) dependendo do objetivo.
+
+---
+## 🔍 Análise de Frequência com FFT (Transformada de Fourier)
+
+A Transformada Rápida de Fourier (FFT - *Fast Fourier Transform*) permite converter o sinal EMG do domínio do tempo (gráfico azul) para o domínio da frequência (gráfico vermelho), facilitando a identificação de padrões rítmicos, frequências dominantes e alterações características de doenças neuromusculares, como a Esclerose Lateral Amiotrófica (ELA).
+
+### 🧠 O que é a FFT?
+A FFT é um algoritmo que decompõe um sinal em suas **componentes senoidais básicas**, mostrando **quais frequências estão presentes** e com qual intensidade. Isso permite examinar padrões que não são visíveis diretamente no tempo.
+
+🔗 Saiba mais: [Fast Fourier Transform (NTi Audio)](https://www.nti-audio.com/en/support/know-how/fast-fourier-transform-fft)
+
+---
+
+### ⚙️ Pré-processamento aplicado no simulador
+
+Antes de aplicar a FFT ao sinal EMG, nosso sistema realiza duas etapas fundamentais para garantir maior precisão:
+
+1. **Remoção do componente DC (offset):**
+   - Subtrai-se a média do sinal, eliminando deslocamentos verticais que distorcem o espectro.
+   - Implementado via: `signal <- signal - mean(signal)`
+
+2. **Aplicação de janelamento (windowing):**
+   - Utilizamos funções de janela (ex: Hanning, Hamming, Blackman) para suavizar as bordas do sinal.
+   - Isso reduz artefatos espectrais (leakage) e melhora a resolução das frequências.
+
+🔬 Referência prática: [BIOPAC – EMG Frequency Signal Analysis](https://www.biopac.com/application-note/emg-electromyogram-frequency-signal-analysis/emg-frequency-signal-analysis/)
+
+---
+
+### 📊 Como interpretar os gráficos
+
+- **Gráfico Azul (Sinal Original):** Mostra o EMG no tempo, com amplitudes em milivolts (mV).
+- **Gráfico Vermelho (FFT):** Exibe o espectro de frequência do sinal (em Hz), onde:
+  - **Picos agudos** indicam frequências dominantes.
+  - **Frequências mais baixas** podem refletir recrutamento de unidades motoras lentas (comum em ELA).
+  - **Espectros achatados ou com menos picos** podem indicar **sincronização anormal** de unidades motoras.
+
+---
+
+### 📐 Métricas calculadas automaticamente
+
+| Métrica                       | Interpretação na ELA (Hipótese)                                                                 |
+|------------------------------|--------------------------------------------------------------------------------------------------|
+| **Frequência Média Ponderada** | Pode ser reduzida na ELA, refletindo menor atividade de fibras rápidas.                         |
+| **Frequência Mediana**         | Divide o espectro ao meio. Valores mais baixos sugerem menor complexidade de recrutamento.     |
+| **Potência Total do Sinal**   | Reduzida na ELA, indicando perda de unidades motoras e menor ativação muscular.                 |
+| **Picos Significativos**      | Menor número de picos pode refletir recrutamento reduzido ou dessincronizado.                   |
+
+📘 Leitura complementar:  
+- [Median and Mean Frequency in EMG – BIOPAC](https://www.biopac.com/application/emg-electromyography/advanced-feature/median-and-mean-frequency-analysis/)
+
+---
+
+### ℹ️ Notas Técnicas
+
+- **Simetria do espectro:** Como o sinal EMG é real, sua FFT é simétrica. Só mostramos a metade positiva.
+- **Resolução espectral (Δf):** Quanto mais longo o sinal no tempo, melhor a separação entre frequências.  
+  Fórmula: `Δf = Fs / N`, onde `Fs` é a frequência de amostragem e `N` o número de amostras.
+- **Magnitude:** A análise usa `abs(FFT)` (amplitude), mas também é comum usar `abs(FFT)^2` (potência) dependendo do objetivo.
+
+---
+
 ## 📊 Explicação Consolidada dos Resultados da Análise de Fourier (FFT)
 
 Esta seção esclarece os resultados obtidos após aplicar a Transformada de Fourier Rápida (**FFT - Fast Fourier Transform**) ao sinal EMG simulado. A análise FFT transforma o sinal do domínio do tempo (**gráfico azul original**) para o domínio da frequência (**gráfico vermelho da FFT**), permitindo examinar características que não são claramente visíveis na visualização temporal.
@@ -55,18 +174,6 @@ Esta seção esclarece os resultados obtidos após aplicar a Transformada de Fou
 ### 🔹 O que é a Transformada de Fourier (FFT)?
 
 A **Transformada de Fourier** é uma técnica matemática que decompõe um sinal complexo no tempo (gráfico azul) em componentes individuais de frequência (gráfico vermelho). A versão utilizada é a **FFT**, uma implementação rápida e eficiente que facilita a análise de grandes sinais.
-
-### 📚 Base Científica e Referências
-
-**Quer entender melhor a ciência por trás?** Vários estudos científicos estabelecem a base para nossa análise:
-
-- 🔬 **O clássico artigo de De Luca (1997)**[^1] é a referência fundamental para entender como usar a FFT em EMG. Ele explica em detalhes como interpretar as frequências médias e medianas nos sinais musculares. Este artigo continua sendo um dos mais citados na área, justamente por estabelecer as bases teóricas que usamos hoje.
-
-- 📊 **Kallenberg & Hermens (2006)**[^2] realizaram pesquisas importantes sobre como a frequência média muda quando o músculo está cansado. Embora o estudo não seja específico para ELA, os conceitos se aplicam perfeitamente porque na ELA também ocorre alteração das unidades motoras.
-
-- 🔍 **Os detalhes técnicos de como o EMG é transformado** são muito bem explicados por Barkhaus & Nandedkar (1994)[^3]. Este artigo é especialmente útil para entender como diferentes componentes afetam o espectro de frequências.
-
-- 🧠 **Para aplicações específicas na ELA**, o trabalho recente de Bashford et al. (2020)[^4] é revolucionário! Eles usaram análise de frequência para caracterizar as alterações musculares nos pacientes com ELA. Este estudo mostra como nossa abordagem está alinhada com as pesquisas mais recentes na área.
 
 ### 🔹 Frequência e Magnitude
 
@@ -78,15 +185,17 @@ A **Transformada de Fourier** é uma técnica matemática que decompõe um sinal
 ### 📌 Resultados e Interpretações Específicas:
 
 #### 1. **Frequência Média Ponderada** (Gráfico vermelho)
+
 - **O que é:** Média ponderada das frequências do sinal, dando mais importância às frequências com magnitudes maiores.
 - **Cálculo:**
   ```R
   mean_freq <- sum(freq * magnitude) / sum(magnitude)
   ```
 - **Interpretação (Hipótese em ELA):** Frequências médias mais baixas indicam predominância de fibras musculares lentas ou perda de fibras rápidas, comum em ELA avançada.
-- **Base científica:** De Luca (1997)[^1] e Kallenberg & Hermens (2006)[^2] mostram que a redução da frequência média ocorre em músculos fatigados ou com perda de unidades motoras, como na ELA.
+- **Valor Exemplo:** `292.86 Hz` (alto, sugere atividade muscular vigorosa ou anormal).
 
 #### 2. **Frequência Mediana** (Gráfico vermelho)
+
 - **O que é:** Frequência que divide o espectro em duas partes iguais de energia.
 - **Cálculo:**
   ```R
@@ -95,18 +204,20 @@ A **Transformada de Fourier** é uma técnica matemática que decompõe um sinal
   median_freq <- freq[median_freq_idx]
   ```
 - **Interpretação (Hipótese em ELA):** Valores reduzidos refletem recrutamento motor limitado e diversidade reduzida das fibras musculares ativas.
-- **Base científica:** A frequência mediana também tende a diminuir com a perda da diversidade de unidades motoras, como discutido por Barkhaus & Nandedkar (1994)[^3].
+- **Valor Exemplo:** `122.80 Hz` (dentro da faixa normal).
 
 #### 3. **Potência Total do Sinal** (Gráfico vermelho)
+
 - **O que é:** Energia total do sinal, soma dos quadrados das magnitudes.
 - **Cálculo:**
   ```R
   total_power <- sum(magnitude^2)
   ```
 - **Interpretação (Hipótese em ELA):** Potência reduzida indica menor ativação muscular, consistente com a perda de unidades motoras na ELA.
-- **Base científica:** A energia total do sinal está relacionada ao número e intensidade de disparos das unidades motoras. Estudos em ELA (Bashford et al., 2020[^4]) relatam redução da potência em estágios avançados.
+- **Valor Exemplo:** `0.03764 mV²` (atividade muscular moderada-baixa).
 
 #### 4. **Número de Picos Significativos** (Gráfico vermelho)
+
 - **O que é:** Frequências dominantes detectadas no espectro.
 - **Cálculo:**
   ```R
@@ -114,13 +225,14 @@ A **Transformada de Fourier** é uma técnica matemática que decompõe um sinal
   significant_peaks <- peaks[magnitude[peaks] > 0.005]
   ```
 - **Interpretação (Hipótese em ELA):** Pacientes com ELA geralmente têm menos picos ou picos dispersos devido à dessincronização motora.
-- **Base científica:** Menor número de picos ou picos mais largos no espectro podem indicar dessincronização dos disparos, como observado em padrões de EMG na ELA[^4].
+- **Valor Exemplo:** `10 picos` (normal).
 
 ---
 
 ### 🔍 Exemplos dos Picos Detectados (Gráfico vermelho)
 
 Os picos ordenados por magnitude mostram as frequências mais importantes:
+
 - Pico 1: `6.70 Hz` (Magnitude: `0.02966`)
 - Pico 2: `7.30 Hz` (Magnitude: `0.02510`)
 
@@ -140,7 +252,8 @@ A aplicação da **FFT** (gráfico vermelho) revela informações importantes so
 
 > **Nota:** As interpretações clínicas são educacionais e devem ser validadas por estudos clínicos reais.
 
----
+
+  
 
 ## 🚀 Futuro do Projeto
 
@@ -159,14 +272,6 @@ Este projeto é uma criação colaborativa do Grupo 2 (Fernando, Francisco, Joã
 
 ---
 
-## 📚 Referências Científicas
-
-[^1]: De Luca CJ (1997). The use of surface electromyography in biomechanics. *Journal of Applied Biomechanics*, 13(2), 135–163. [https://doi.org/10.1123/jab.13.2.135](https://doi.org/10.1123/jab.13.2.135)  
-[^2]: Kallenberg LA, Hermens HJ (2006). Behavior of a surface EMG based measure for motor control: Motor unit action potential rate in relation to force and muscle fatigue. *J Electromyogr Kinesiol*, 16(6), 619–626. [https://doi.org/10.1016/j.jelekin.2006.02.005](https://doi.org/10.1016/j.jelekin.2006.02.005)  
-[^3]: Barkhaus PE, Nandedkar SD (1994). Recording characteristics of the surface EMG electrode. *Muscle & Nerve*, 17(7), 815–826. [https://doi.org/10.1002/mus.880170714](https://doi.org/10.1002/mus.880170714)  
-[^4]: Bashford J, Wickham L, Menon P, et al. (2020). Network analysis of muscle activity in ALS. *Clinical Neurophysiology*, 131(5), 1116–1125. [https://doi.org/10.1016/j.clinph.2019.12.410](https://doi.org/10.1016/j.clinph.2019.12.410)
-
----
 
 🔗 **Acesse o repositório:** [GitHub - franciscodnlneto/ppgeb39](https://github.com/franciscodnlneto/ppgeb39)
 
