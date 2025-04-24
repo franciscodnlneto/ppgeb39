@@ -1,3 +1,4 @@
+
 # ⚡️ Simulador de EMG para Identificação de Padrões na Esclerose Lateral Amiotrófica (ELA)
 
 📚 **Disciplina:** PGEB39 – Processamento de Sinais Biomédicos  
@@ -68,4 +69,3 @@ Este projeto é uma criação colaborativa do Grupo 2 (Fernando, Francisco, Joã
 ---
 
 Feito com 💙 e ☕️ pelos alunos da disciplina PGEB39 do PPGEB-UFU.
-
