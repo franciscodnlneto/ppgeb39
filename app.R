@@ -1,4 +1,5 @@
-# -----------------------------------------------------------------------------
+
+  # -----------------------------------------------------------------------------
 #  Simulador de EMG – Identificação de Padrões em Esclerose Lateral Amiotrófica
 #  Grupo 2 – Fernando • Francisco • João • Ysabel
 #  PGEB39 – Processamento de Sinais Biomédicos • 1º Sem/2025
@@ -896,7 +897,9 @@ ui <- dashboardPage(
     width = 270,
     sidebarMenu(id = "tabs",
                 menuItem("Simulação de EMG", tabName = "simulation", icon = icon("wave-square")),
-                menuItem("Transformada de Fourier", tabName = "analysis", icon = icon("chart-line"))
+                menuItem("Transformada de Fourier", tabName = "analysis", icon = icon("chart-line")),
+                menuItem("Gerador de Senoides", tabName = "sine_generator", icon = icon("wave-square"))
+                
     ),
     hr(style = "margin:6px 0;"),
     tags$div(
@@ -1397,6 +1400,44 @@ ui <- dashboardPage(
                 fluidRow(
                   box(title = "Resultados da Análise de Fourier", width = 12, status = "success", solidHeader = TRUE,
                       DT::dataTableOutput("fft_results_table") %>% withSpinner())
+                )
+              )
+      ),
+      
+      # ABA: GERADOR DE SENOIDES ----------------------------------
+      tabItem(tabName = "sine_generator",
+              fluidRow(
+                column(4,
+                       box(title = "Configuração de Componentes", width = 12,
+                           status = "primary", solidHeader = TRUE,
+                           selectInput("component_type", "Tipo de Componente:",
+                                       choices = c("Constante" = "const", "Senoide" = "sine"), selected = "const"),
+                           conditionalPanel(
+                             condition = "input.component_type == 'const'",
+                             sliderInput("const_value", "Valor da Constante:",
+                                         min = -5, max = 5, value = 1, step = 0.1)
+                           ),
+                           conditionalPanel(
+                             condition = "input.component_type == 'sine'",
+                             selectInput("num_sine_components", "Número de Senoides (1 a 100):",
+                                         choices = 1:100, selected = 1),
+                             uiOutput("sine_config_ui")
+                           ),
+                           hr(),
+                           
+                           sliderInput("sine_total_time", "Duração Total (s):", min = 1, max = 10, value = 2, step = 1),
+                           sliderInput("sine_sampling_rate", "Frequência de Amostragem (Hz):", min = 500, max = 5000, value = 2000, step = 500),
+                           
+                       )
+                ),
+                column(8,
+                       box(title = "Visualização do Sinal Gerado", width = 12, status = "info", solidHeader = TRUE,
+                           plotlyOutput("sine_plot") %>% withSpinner())
+                )
+              ),
+              fluidRow(
+                column(12,
+                       downloadButton("download_sine_btn", "Download CSV", class = "btn-success")
                 )
               )
       )
@@ -1969,14 +2010,7 @@ server <- function(input, output, session) {
       summary_data <- rbind(summary_data, peak_data)
     }
     
-    # Decidi não adicionar... Mas se precisar é só remover o comentário
-    #fft_note <- data.frame(
-    #  Métrica = "Nota: FFT",
-    #  `O que é` = "FFT significa 'Fast Fourier Transform' (Transformada Rápida de Fourier)",
-    #  Fórmula = "Algoritmo eficiente para calcular a Transformada de Fourier Discreta",
-    #  `Possível Interpretação na ELA (Hipótese)` = "Técnica que permite analisar a distribuição de frequências nos sinais EMG, revelando características que não são visíveis no domínio do tempo",
-    #  Valor = "N/A"
-    #)
+
     
     summary_data <- rbind(summary_data)#, fft_note)
     
@@ -2015,6 +2049,78 @@ server <- function(input, output, session) {
     ) %>%
       formatStyle(columns = 0:4, fontSize = '90%')
   })
+  
+  # Armazenar os dados gerados
+  sine_signal_data <- reactiveVal(NULL)
+  
+  # Criar UI dinâmica para os componentes de senoides
+  output$sine_config_ui <- renderUI({
+    req(input$component_type == "sine")
+    req(input$num_sine_components)
+    n <- as.integer(input$num_sine_components)
+    lapply(1:n, function(i) {
+      tagList(
+        hr(),
+        h4(paste("Senoide", i)),
+        sliderInput(paste0("sine_amp_", i), paste("Amplitude A", i),
+                    min = 0, max = 2, value = 1, step = 0.1),
+        sliderInput(paste0("sine_freq_", i), paste("Frequência F", i, "(Hz)"),
+                    min = 1, max = 500, value = i * 10, step = 1)
+      )
+    })
+  })
+  
+  # Gera o sinal composto
+  observe({
+    total_time <- input$sine_total_time
+    sampling_rate <- input$sine_sampling_rate
+    time <- seq(0, total_time, by = 1/sampling_rate)
+    signal <- rep(0, length(time))
+    evento <- rep("", length(time))
+    
+    if (input$component_type == "const") {
+      signal <- signal + input$const_value
+    } else if (input$component_type == "sine") {
+      n <- as.integer(input$num_sine_components)
+      for (i in 1:n) {
+        A <- input[[paste0("sine_amp_", i)]]
+        F <- input[[paste0("sine_freq_", i)]]
+        if (!is.null(A) && !is.null(F)) {
+          component <- A * sin(2 * pi * F * time)
+          signal <- signal + component
+        }
+      }
+    }
+    
+    df <- data.frame(
+      tempo_segundos = time,
+      amplitude_mV = signal,
+      evento = evento
+    )
+    sine_signal_data(df)
+  })
+  
+  # Plotar o sinal
+  output$sine_plot <- renderPlotly({
+    req(sine_signal_data())
+    df <- sine_signal_data()
+    plot_ly(df, x = ~tempo_segundos, y = ~amplitude_mV, type = 'scatter', mode = 'lines',
+            line = list(color = 'blue')) %>%
+      layout(title = "Sinal Gerado", xaxis = list(title = "Tempo (s)"),
+             yaxis = list(title = "Amplitude (mV)"))
+  })
+  
+  # Botão de download
+  output$download_sine_btn <- downloadHandler(
+    filename = function() {
+      paste0("sinal_senoidal_", Sys.Date(), ".csv")
+    },
+    content = function(file) {
+      write.csv(sine_signal_data(), file, row.names = FALSE)
+    }
+  )
+  
+  
 }
 
 # Executar a aplicação
