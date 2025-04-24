@@ -144,10 +144,6 @@ A **Transformada de Fourier** é uma técnica matemática que decompõe um sinal
 
 ---
 
-Claro! Aqui está a **seção pronta para colar no seu README**, exatamente como você pediu:
-
----
-
 ## 🧮 Como foi calculado o FFT no Simulador
 
 Na aplicação Shiny, **a Transformada Rápida de Fourier (FFT)** foi implementada usando a função `fft()` da **base do R** (`package:stats`), sem necessidade de bibliotecas externas adicionais.
