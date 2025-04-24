@@ -155,6 +155,16 @@ Na aplicação Shiny, **a Transformada Rápida de Fourier (FFT)** foi implementa
 ### 📦 Biblioteca utilizada:
 - **`fft()`** do próprio R base (não precisa instalar nada adicional)
 
+### 🔗 Referência oficial da função `fft()` do R
+
+> 📌 **Função utilizada para calcular a Transformada de Fourier (base do R)**
+
+- **Documentação oficial do R (base):**  
+  📄 [`fft()` - R Documentation](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/fft.html)  
+  https://stat.ethz.ch/R-manual/R-devel/library/stats/html/fft.html
+
+---
+
 ---
 
 ### ⚙️ Etapas do Cálculo da FFT no Código:
