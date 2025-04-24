@@ -9,6 +9,7 @@
 
 library(rsconnect)
 
+
 # CREDENCIAIS
 rsconnect::setAccountInfo(
   name = 'prototipo', 
@@ -19,13 +20,11 @@ rsconnect::setAccountInfo(
 # Navegue até o diretório do seu app
 setwd("C:/Users/francisco.negrao/Desktop/PPGEB39G2")
 
-# Deploy com a opção forceUpdate para garantir que seja uma atualização
 #rsconnect::deployApp(
-#  appName = "PPGEB39G2-EMG-Simulator",  # Use o mesmo nome usado anteriormente
+#  appName = "PPGEB39G2-EMG-Simulator",
 #  appTitle = "Simulador EMG - Padrões de ELA",
 #  forceUpdate = TRUE
 #)
-
 
 # --------------------------- INSTALAÇÃO DE PACOTES ---------------------------
 if (!require("shiny"))            install.packages("shiny")
@@ -904,13 +903,16 @@ ui <- dashboardPage(
       style = "padding:12px; font-size:13px; color:#ffffff; line-height:20px; text-align:left;",
       HTML(
         "📚 <b>Disciplina PGEB39</b><br/>
-     🗓️ <b>1º Sem/2025</b><br/>
-     🧑‍🏫 Prof. Drº João Batista Destro Filho<br/><br/>
-     
-     💼 <u>Seminário 25/04/2025</u><br/>
-     🚀 Aplicação desenvolvida por alunos do PPGEB‑UFU<br/><br/>
-     👥 <b>Grupo 2</b>: Fernando&nbsp;|&nbsp;Francisco&nbsp;|&nbsp;João&nbsp;|&nbsp;Ysabel<br/><br/>
-     🎯 <b>Objetivo:</b>: Capacitar profissionais da saúde a identificar e reconhecer padrões de EMG característicos da Esclerose Lateral Amiotrófica."
+      🗓️ <b>1º Sem/2025</b><br/>
+      🧑‍🏫 Prof. Drº João Batista Destro Filho<br/><br/>
+      💼 <u>Seminário 25/04/2025</u><br/>
+      🚀 Aplicação desenvolvida por alunos do PPGEB‑UFU<br/><br/>
+      👥 <b>Grupo 2</b>: Fernando&nbsp;|&nbsp;Francisco&nbsp;|&nbsp;João&nbsp;|&nbsp;Ysabel<br/><br/>
+      🎯 <b>Objetivo:</b> Capacitar profissionais da saúde a identificar e reconhecer padrões de EMG característicos da Esclerose Lateral Amiotrófica.<br/><br/>
+      🐙 <b>Veja o código no GitHub:</b><br/>
+      <a href='https://github.com/franciscodnlneto/ppgeb39' target='_blank' style='color:#1e90ff; text-decoration:none;'>
+      🔗 Você é livre para baixar, modificar e aprimorar!
+      </a>"
       )
     )
   ),
